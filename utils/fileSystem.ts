@@ -57,6 +57,34 @@ const scanDirectory = (directory: Directory, depth: number = 0): PDFFile[] => {
 };
 
 /**
+ * Removes duplicate PDFs from the list
+ * Duplicates are identified by matching name AND size
+ */
+const removeDuplicatePDFs = (pdfs: PDFFile[]): PDFFile[] => {
+    const seen = new Map<string, PDFFile>();
+
+    for (const pdf of pdfs) {
+        // Create a unique key based on name and size
+        const key = `${pdf.name}_${pdf.size}`;
+
+        if (!seen.has(key)) {
+            // First occurrence - keep it
+            seen.set(key, pdf);
+        } else {
+            // Duplicate found - prefer file:// URIs over content:// URIs
+            const existing = seen.get(key)!;
+            if (pdf.uri.startsWith('file://') && !existing.uri.startsWith('file://')) {
+                seen.set(key, pdf);
+            }
+        }
+    }
+
+    const uniquePdfs = Array.from(seen.values());
+    console.log(`Removed ${pdfs.length - uniquePdfs.length} duplicate PDFs`);
+    return uniquePdfs;
+};
+
+/**
  * Scans for PDF files on the device
  * - Android: Scans user-selected directory (if previously chosen)
  * - iOS: Scans Paths.document and Paths.cache
@@ -86,8 +114,8 @@ export const scanForPDFs = async (): Promise<PDFFile[]> => {
                 }
             }
 
-            // Return empty array if no directory selected - UI will prompt user
-            return pdfFiles;
+            // Remove duplicates before returning
+            return removeDuplicatePDFs(pdfFiles);
 
         } else {
             // iOS: Scan app's sandboxed directories
@@ -103,7 +131,8 @@ export const scanForPDFs = async (): Promise<PDFFile[]> => {
                 }
             }
 
-            return pdfFiles;
+            // Remove duplicates before returning
+            return removeDuplicatePDFs(pdfFiles);
         }
     } catch (error) {
         console.error('Error scanning for PDFs:', error);
