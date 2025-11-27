@@ -1,50 +1,93 @@
-# Welcome to your Expo app 👋
+# PDF Loader App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A robust React Native application built with Expo that scans, lists, and opens PDF files from your device. This app provides a seamless experience for managing local PDF documents with a modern, clean user interface.
 
-## Get started
+## 🚀 Features
 
-1. Install dependencies
+- **Smart PDF Scanning**:
+  - **Android**: Compliant with Scoped Storage. Allows users to select a specific folder to scan for PDFs. The selection is persisted for future app launches.
+  - **iOS**: Automatically scans the app's document and cache directories.
+- **Duplicate Detection**: Automatically identifies and removes duplicate PDF files based on name and file size, ensuring a clean list.
+- **Native PDF Viewing**: Opens PDFs using the device's default PDF viewer (e.g., Google Drive Viewer, Apple Books) for the best reading experience and compatibility.
+- **Search & Sort**:
+  - Real-time search by file name.
+  - Sort by Name, Date Modified, or File Size.
+- **File Management**:
+  - View file details (size, date).
+  - Delete files directly from the app.
+- **Modern UI**: Built with a clean, responsive design using custom tab navigation.
 
+## 🛠 Tech Stack
+
+- **Framework**: [Expo](https://expo.dev/) (React Native)
+- **Language**: TypeScript
+- **Navigation**: [Expo Router](https://docs.expo.dev/router/introduction/)
+- **File System**: `expo-file-system` (with legacy support for Android content URIs)
+- **Sharing**: `expo-sharing`
+- **Icons**: `lucide-react-native` & `@expo/vector-icons`
+
+## ⚙️ Installation & Setup
+
+To run this project, you need to have [Node.js](https://nodejs.org/) installed on your machine.
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/bibekkd/Pdf-loader-app.git
+   cd Pdf-loader-app
+   ```
+
+2. **Install dependencies**
    ```bash
    npm install
+   # or
+   bun install
    ```
 
-2. Start the app
+## 📱 Running the App
 
+### ⚠️ Important: Development Build Required
+
+This app uses native modules and specific file system configurations that work best with a **Development Build** (Prebuild). While some features might work in Expo Go, it is highly recommended to run the prebuild command to ensure all native permissions and file access capabilities (especially for Android Scoped Storage and PDF opening) function correctly.
+
+1. **Generate Native Directories (Prebuild)**
    ```bash
-   npx expo start
+   npx expo prebuild
    ```
 
-In the output, you'll find options to open the app in a
+2. **Run on Android**
+   ```bash
+   npx expo run:android
+   ```
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+3. **Run on iOS**
+   ```bash
+   npx expo run:ios
+   ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 📂 Project Structure
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+/app
+  /(tabs)          # Main tab navigation (Home, Explore)
+  pdf-viewer.tsx   # Screen handling PDF opening/viewing logic
+  _layout.tsx      # Root layout configuration
+/components        # Reusable UI components (PDFCard, EmptyState, SortModal)
+/utils
+  fileSystem.ts    # Core logic for scanning, copying, and managing files
+  formatters.ts    # Helpers for date and size formatting
+  permissions.ts   # Permission handling logic
+/types             # TypeScript definitions
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🐛 Troubleshooting
 
-## Learn more
+- **Android PDF Opening Error**: If you encounter issues opening PDFs on Android, ensure you are using the `npx expo run:android` command rather than Expo Go, as the app uses specific intent handling for content URIs.
+- **Duplicate Files**: The app automatically filters duplicates. If you see "missing" files, they might have been detected as duplicates of existing files in the list.
 
-To learn more about developing your project with Expo, look at the following resources:
+## 🤝 Contributing
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Contributions are welcome! Feel free to open an issue or submit a pull request.
 
-## Join the community
+## 📄 License
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This project is open source and available under the [MIT License](LICENSE).
