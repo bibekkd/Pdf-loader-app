@@ -272,7 +272,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#ffffff',
     paddingTop: Platform.OS === 'android' ? 30 : 0,
   },
   loadingOverlay: {
