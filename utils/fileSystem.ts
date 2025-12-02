@@ -280,7 +280,34 @@ export const sharePDF = async (pdf: PDFFile): Promise<void> => {
         const canShare = await Sharing.isAvailableAsync();
         if (!canShare) return;
 
-        await Sharing.shareAsync(pdf.uri, {
+        let shareUri = pdf.uri;
+
+        // For Android content:// URIs, we need to copy to cache first
+        // because expo-sharing only supports file:// URIs
+        if (Platform.OS === 'android' && pdf.uri.startsWith('content://')) {
+            console.log('Converting content:// URI to file:// for sharing...');
+            const LegacyFS = require('expo-file-system/legacy');
+
+            const cacheDir = new Directory(Paths.cache);
+            const sanitizedName = pdf.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+            const destPath = cacheDir.uri + sanitizedName;
+
+            // Check if file already exists in cache
+            const destFile = new File(destPath);
+            if (!destFile.exists) {
+                // Copy to cache
+                console.log('Copying to cache for sharing...');
+                await LegacyFS.copyAsync({
+                    from: pdf.uri,
+                    to: destPath
+                });
+            }
+
+            shareUri = destPath;
+            console.log('Using cached file for sharing:', shareUri);
+        }
+
+        await Sharing.shareAsync(shareUri, {
             mimeType: 'application/pdf',
             dialogTitle: `Share ${pdf.name}`,
         });
